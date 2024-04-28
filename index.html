@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas height="600" width='600' id='cnvs'></canvas><br />
+    <input type="button" onclick="draw()" value="Start">
+    <input type="range" min="1" max="10" value="4" id="myRange" step="0.1">
+    </canvas>
+    <script>
+        var slider = document.getElementById("myRange");
+        var output = slider.value;
+
+        var canvas = document.getElementById("cnvs"), ctx = canvas.getContext("2d");
+        var ang90 = Math.PI / 2; // Угол поворота на 90 градусов
+        var ang45 = Math.PI / 4; // Угол поворота на 45 градусов
+        var ang30 = Math.PI / 6; // Угол поворота на 45 градусов
+
+
+
+        var Point = function (x, y) // Конструктор для точки
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        function drawLine(a, b) // Рисование линии
+        {
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+
+            ctx.stroke();
+        }
+
+        function drawTree(x, y, a, angle) // построение дерева Пифагора
+        {
+            if (a > 3) {
+                a = a * 0.7;
+                var nx = Math.round(x + a * Math.cos(angle)), // вычисление новых координат
+                    ny = Math.round(y - a * Math.sin(angle));
+                drawLine(new Point(3 * x, 3 * y), new Point(3 * nx, 3 * ny));
+                drawTree(nx, ny, a, angle + ang45); // рекурсивный вызов для новых точек
+                drawTree(nx, ny, a, angle - ang45); // под другими углами
+            }
+        }
+        function drawholst() {
+            var imgData = ctx.createImageData(600, 600);
+            ctx.beginPath();
+            ctx.putImageData(imgData, 0, 0);
+            ctx.strokeStyle = 'green';
+            drawTree(100, 160, 60, ang90);
+            ctx.closePath();
+        }
+        function draw() // главная функция
+        {
+            drawholst();
+            slider.oninput = function () {
+                ang45 = Math.PI / this.value;
+                drawholst()
+            }
+        }
+    </script>
+</body>
+
+</html>
